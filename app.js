@@ -148,6 +148,53 @@ server.get('/api/goodsDetails', (req, res) => {
         }
     })
 })
+// 添加商品
+server.get('/api/goods/add', (req, res) => {
+    const data = req.query;
+    const sql = `INSERT INTO uc_goods SET ?`;
+    pool.query(sql, [data], (err, result) => {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+            const msg = {
+                code: 10000,
+                msg: 'success',
+                data: null
+            }
+            res.writeHead(200, {
+                "Access-Control-Allow-Origin": "http://localhost:8080"
+            })
+            res.write(JSON.stringify(msg));
+            res.end();
+            // res.send({code:200,msg:'查询成功',data:result})
+        } else {
+            res.send({ code: 404, msg: '添加商品失败', data: null })
+        }
+    })
+})
+// 编辑商品
+server.get('api/goods/update', (req, res) => {
+    const data = req.query;
+    const goodsSPU = res.query.goodsSPU;
+    const sql = `UPDATE uc_goods SET ? WHERE goodsSPU=?`;
+    pool.query(sql, [data], (err, result) => {
+        if (err) throw err;
+        if (result.length > 0) {
+            const msg = {
+                code: 10000,
+                msg: 'success',
+                data: null
+            }
+            res.writeHead(200, {
+                "Access-Control-Allow-Origin": "http://localhost:8080"
+            })
+            res.write(JSON.stringify(msg));
+            res.end();
+            // res.send({code:200,msg:'查询成功',data:result})
+        } else {
+            res.send({ code: 404, msg: '编辑会员失败', data: null })
+        }
+    })
+})
 //查询会员列表
 server.get('/api/member', (req, res) => {
     var sql = 'SELECT * FROM uc_member';
@@ -241,8 +288,6 @@ server.get('api/memberOrder', (req, res) => {
         }
     })
 })
-
-
 // 查询订单列表
 server.get('/api/orders', (req, res) => {
     const sql = "SELECT * FROM uc_orders";
@@ -273,7 +318,6 @@ server.get('/api/orders', (req, res) => {
                                     item.goosdsMessage = result[0];
                                 })
                                 resolve();
-                                // console.log(msg.data,'goods-2')
                             } else {
                                 res.send({ code: 10000, msg: '获取商品信息失败' })
                             }
@@ -299,6 +343,76 @@ server.get('/api/orders', (req, res) => {
             })
         } else {
             res.send({ code: 404, msg: 'error', data: null })
+        }
+    })
+})
+// 根据订单号查询订单
+server.get('api/order/orderNo', (req, res) => {
+    const orderNo = req.query.orderNo;
+    const sql = 'SELECT * FROM uc_order FROM orderNo=?';
+    pool.query(sql, [orderNo], (err, result) => {
+        if (err) throw err;
+        if (result.length > 0) {
+            const msg = {
+                code: 10000,
+                msg: 'success',
+                data: result
+            }
+            res.writeHead(200, {
+                "Access-Control-Allow-Origin": "http://localhost:8080"
+            })
+            res.write(JSON.stringify(msg));
+            res.end();
+            // res.send({code:200,msg:'查询成功',data:result})
+        } else {
+            res.send({ code: 404, msg: '查询会员订单失败', data: null })
+        }
+    })
+})
+// 根据收件人查询订单
+server.get('api/order/receiver', (req, res) => {
+    const receiver = req.query.receiver;
+    const sql = 'SELECT * FROM uc_order FROM receiver=?';
+    pool.query(sql, [receiver], (err, result) => {
+        if (err) throw err;
+        if (result.length > 0) {
+            const msg = {
+                code: 10000,
+                msg: 'success',
+                data: result
+            }
+            res.writeHead(200, {
+                "Access-Control-Allow-Origin": "http://localhost:8080"
+            })
+            res.write(JSON.stringify(msg));
+            res.end();
+            // res.send({code:200,msg:'查询成功',data:result})
+        } else {
+            res.send({ code: 404, msg: '查询会员订单失败', data: null })
+        }
+    })
+})
+// 编辑订单
+server.get('/api/orders/update', (req, res) => {
+    const data = req.query;
+    const orderNo = req.query.orderNo;
+    const sql = `UPDATE uc_orders SET ? WHERE orderNo = ?`;
+    pool.query(sql, [data, orderNo], (err, result) => {
+        if (err) throw err
+        if (result.affectedRows > 0) {
+            const msg = {
+                code: 10000,
+                msg: 'success',
+                data: null
+            }
+            res.writeHead(200, {
+                "Access-Control-Allow-Origin": "http://localhost:8080"
+            })
+            res.write(JSON.stringify(msg));
+            res.end();
+            // res.send({code:200,msg:'查询成功',data:result})
+        } else {
+            res.send({ code: 404, msg: '编辑订单失败', data: null })
         }
     })
 })
